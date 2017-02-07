@@ -226,7 +226,7 @@ function Timeline(xPos, yPos, width, height){
             p.fill(255);
             var width = p.width / (vid.duration() / soundEffectsList[key].soundEffect.duration());
             // console.log(key);
-            p.rect(soundEffectsList[key].xPos, yPos + (soundEffectsList[key].id * 20), width, 20);
+            p.rect(soundEffectsList[key].xPos, yPos + (soundEffectsList[key].id * 15), width, 15);
           }
 
         //  this.soundEffects.forEach(function(item, index){
