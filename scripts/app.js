@@ -13,6 +13,12 @@ myApp.config(function($stateProvider, $urlRouterProvider, $locationProvider) {
             url: '/',
             templateUrl: 'partials/partial-home.html',
             controller: function ($scope, $stateParams, $rootScope) {
+
+				   $rootScope.autoplay = true;
+					$scope.toggleBtn = function() {
+						$rootScope.autoplay = ($rootScope.autoplay == true ?  false : true);
+						$rootScope.$broadcast('togglePlay', {"toggle": $rootScope.autoplay});
+			    }
             
             }  
         })
@@ -124,6 +130,14 @@ myApp.directive('modalDialog', function() {
     templateUrl: 'partials/modal-template.html' 
   };
 });
+
+myApp.directive('playbtn', function() {
+    return {
+      restrict: 'E',
+      scope: {autoplay:'='},
+      template: '<i ng-class="{\'play active\': autoplay, \'play\': !autoplay}"></i>'
+    }
+  });
 
 myApp.controller('MainController', function($scope) {
   $scope.greeting = 'Hola!';

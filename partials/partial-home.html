@@ -1,7 +1,12 @@
 <div ng-controller="SketchController">
   <div id="sketch-holder">     
   </div>
-  <modal-dialog show='modalShown' width='60%' height='20%'>
+
+<div id="play-toggle">
+    <playbtn ng-click="toggleBtn();" autoplay="autoplay"><i class="ion-ios-play"></i></playbtn>
+</div>
+
+ <!--  <modal-dialog show='modalShown' width='60%' height='20%'>
   <p>{{modalText}}<p>
-</modal-dialog>
+</modal-dialog> -->
 </div>

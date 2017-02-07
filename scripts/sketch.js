@@ -24,7 +24,8 @@ var sfx = [];
 var timeline; 
 var progressTracker; 
 var soundEffectsList = {};
-
+var button;
+var isPlaying = true;
   p.preload = function(){
     for(var i=0; i < 8; i++){      
       sfx.push(p.loadSound('images/sounds/'+ i +'.mp3'));
@@ -39,6 +40,8 @@ var soundEffectsList = {};
     vid.volume(0);
 		canvas = p.createCanvas(p.windowWidth, (p.windowWidth / 16) * 9);
 		canvas.parent('sketch-holder');
+    button = p.createButton("pause"); 
+    
 
     var soundContWidth = p.width * .2;
     spacing = soundContWidth / 10;
@@ -49,7 +52,7 @@ var soundEffectsList = {};
 
     timeline = new Timeline(0, p.height - timelineHeight,p.width,timelineHeight);
     progressTracker = new ProgressTracker(0, p.height - timelineHeight, 20);
-
+    
     var width = soundContWidth / 2 - (spacing);
     var index = 0;
     for(var i=0; i < 2; i++){   
@@ -59,11 +62,25 @@ var soundEffectsList = {};
       }
     }
 
+    $rootScope.$on('togglePlay', function(e, data){
+      // isPlaying = !isPlaying;
+      if(isPlaying){
+        vid.pause();
+        isPlaying = false;
+      }else{
+        vid.play();
+        isPlaying = true;
+      }
+      // isPlaying = !isPlaying;
+      
+    });
+
 	}
+
+  
 
 	p.draw = function() {
     p.image(vid,0,0,p.width *.8,p.height *.8);
-
     //sound library    
     p.fill(100);
     p.rect(p.width - (p.width * .2), 0, p.width * .2, p.height);
@@ -72,6 +89,7 @@ var soundEffectsList = {};
     timeline.checkTiles();
     progressTracker.display();
     progressTracker.playSoundEffects();
+    
 
     for(var i=0; i < soundTiles.length; i++){ 
       soundTiles[i].checkDrag();
@@ -99,6 +117,9 @@ function SoundTile(xPos, yPos, width, height, tileIndex, soundEffect) {
   this.dragY = yPos;
   this.soundEffect = sfx[this.index];
   this.isPlaying = false;
+
+
+
 
 
   this.checkDrag = function(){
@@ -134,17 +155,18 @@ function SoundTile(xPos, yPos, width, height, tileIndex, soundEffect) {
 
   this.playTrack = function(){
 
-    if(p.mouseIsPressed){
-        this.isPlaying = true;
-      }
 
-     if(this.isPlaying){
-      if(this.soundEffect.isPlaying()){
-      }else{
-        // this.soundEffect.play();
-      }
+    // if(p.mouseIsPressed){
+    //     this.isPlaying = true;
+    //   }
+
+     // if(this.isPlaying){
+     //  if(this.soundEffect.isPlaying()){
+     //  }else{
+     //    // this.soundEffect.play();
+     //  }
       
-     }; 
+     // }; 
     }
 
   this.checkTimeline = function(){
@@ -181,62 +203,19 @@ function Timeline(xPos, yPos, width, height){
         p.fill(155,0,170);
         p.rect(this.xPos,this.yPos,this.width,this.height);
 
-        // if (soundTiles[i].index in soundEffects){
-          // this.soundEffects[soundTiles[i].index] = {"id": soundTiles[i].index, "xPos":p.mouseX, "soundEffect": soundTiles[i].soundEffect};
-        // }else{
-        //   soundEffects[soundTiles[i].index]
-        // }
-
-        // console.log(this.soundEffects);
-
-        // if(!this.soundEffects.length){
-        //   this.soundEffects.push(soundTiles[i].index : {"id": soundTiles[i].index, "xPos":p.mouseX, "soundEffect": soundTiles[i].soundEffect});
-        //   log.push(soundTiles[i].index);
-        // }
-        // if(log.indexOf(soundTiles[i].index) > -1){
-        //   this.soundEffects.splice(soundEffects.indexOf(),1);
-        // }
       }
     }
 
 
-    // for(var i=0; i < soundTiles.length; i++){ 
-    //   if(soundTiles[i].yPos + soundTiles[i].height > this.yPos){
-    //     p.fill(155,0,170);
-    //     p.rect(this.xPos,this.yPos,this.width,this.height);
-          
-          
-   
-    //       if(!log.length){
-    //             log.push(soundTiles[i].index);
-    //             this.soundEffects.push({"id": soundTiles[i].index, "xPos":p.mouseX, "soundEffect": soundTiles[i].soundEffect});
-    //           }
-
-    //        if(log.indexOf(soundTiles[i].index) > -1){
-    //          this.soundEffects[soundTiles[i].index] = {"id": soundTiles[i].index, "xPos":p.mouseX, "soundEffect": soundTiles[i].soundEffect};
-    //        }else{
-    //           log.push(soundTiles[i].index);
-    //            this.soundEffects.push({"id": soundTiles[i].index, "xPos":p.mouseX, "soundEffect": soundTiles[i].soundEffect});
-
-    //        }
-            
-    //       }
 
           for(key in soundEffectsList){
             p.fill(255);
             var width = p.width / (vid.duration() / soundEffectsList[key].soundEffect.duration());
-            // console.log(key);
+
             p.rect(soundEffectsList[key].xPos, yPos + (soundEffectsList[key].id * 15), width, 15);
           }
 
-        //  this.soundEffects.forEach(function(item, index){
-        //   p.fill(255);
-        //   var width = p.width / (vid.duration() / item.soundEffect.duration());
-        //   p.rect(item.xPos,yPos + (index * 20), width, 20);
-        // });
 
-
-    //   }
     }
   
 
@@ -256,12 +235,16 @@ function ProgressTracker(xPos, yPos, diam){
       this.completion = vid.time() / vid.duration();
       this.xPos = p.width * this.completion;
     }
+  
+  // this.togglePlaying();
     
     p.fill(255);
     p.ellipse(this.xPos ,this.yPos,this.diam,this.diam);
     if(p.dist(this.xPos, this.yPos, p.mouseX, p.mouseY) < diam + 10){
       if(p.mouseIsPressed){
-        this.isPlaying = false;
+        isPlaying = false;
+        $rootScope.autoplay = false;
+        $rootScope.$apply();
         vid.pause();
         this.isPanning = true;
         this.xPos = p.mouseX;
@@ -270,10 +253,10 @@ function ProgressTracker(xPos, yPos, diam){
         this.isPanning = false;
       }
     }else{
-      if(!this.isPlaying){
-        this.isPlaying = true;
-        vid.play();
-      }
+      // if(!isPlaying){
+      //   isPlaying = true;
+      //   vid.play();
+      // }
     }
   }
 
